@@ -8,11 +8,16 @@ var mqtt = require('mqtt');
 var client = mqtt.connect('mqtt://mqtt.thingspeak.com', {
     username: keys.user,
     password: keys.mqtt,
-    clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+    clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
+    connectTimeout: 1000
 });
 client.on('connect', function () {
     setTimeout(populateChannels, 120, 0);
 });
+
+client.on('error', function (error) {
+    Console.log(error);
+})
 
 var populateChannels = function (i) {
     if (!client.connected) {
@@ -27,12 +32,17 @@ var populateChannels = function (i) {
     var humidity = (Math.random() * localities[id].maxHumidity) + localities[id].minHumidity;
 
     client.publish('channels/' + localities[id].channel_id + '/publish/' + localities[id].write_key,
-        'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7=' + localities[id].lat + '&field8=' + localities[id].long + '&status=MQTTPUBLISH');
+        'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7=' + localities[id].lat + '&field8=' + localities[id].long + '&status=MQTTPUBLISH',
+        {qos: 1}, function (err) {
+            if (err != undefined) {
+                console.log(err);
+            }
+        });
 
     if (i < 6) {
         setTimeout(populateChannels, 120, ++i);
     }
     else {
-        client.close();
+        client.end();
     }
 };
