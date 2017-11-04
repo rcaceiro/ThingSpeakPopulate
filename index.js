@@ -16,7 +16,7 @@ client.on('connect', function () {
 });
 
 client.on('error', function (error) {
-    Console.log(error);
+    console.log(error);
 })
 
 var populateChannels = function (i) {
