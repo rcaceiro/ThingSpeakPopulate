@@ -12,7 +12,7 @@ var client = mqtt.connect('mqtt://mqtt.thingspeak.com', {
     connectTimeout: 1000
 });
 client.on('connect', function () {
-    setTimeout(populateChannels, 120, 0);
+    setTimeout(populateChannels, 1200, 0);
 });
 
 client.on('error', function (error) {
@@ -40,7 +40,7 @@ var populateChannels = function (i) {
         });
 
     if (i < 6) {
-        setTimeout(populateChannels, 120, ++i);
+        setTimeout(populateChannels, 1200, ++i);
     }
     else {
         client.end();
