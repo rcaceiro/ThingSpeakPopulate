@@ -31,9 +31,11 @@ var populateChannels = function (i) {
     var temperature = (Math.random() * localities[id].maxTemperature) + localities[id].minTemperature;
     var humidity = (Math.random() * localities[id].maxHumidity) + localities[id].minHumidity;
 
-    client.publish('channels/' + localities[id].channel_id + '/publish/' + localities[id].write_key,
-        'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7=' + localities[id].lat + '&field8=' + localities[id].long + '&status=MQTTPUBLISH',
-        {qos: 1}, function (err) {
+    var pubish_channel = 'channels/' + localities[id].channel_id + '/publish/' + localities[id].write_key;
+    var publish_payload = 'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7=' + localities[id].lat + '&field8=' + localities[id].long + '&status=MQTTPUBLISH';
+    console.log('channel: ' + pubish_channel);
+    console.log('payload: ' + publish_payload);
+    client.publish(pubish_channel, publish_payload, {qos: 1}, function (err) {
             if (err != undefined) {
                 console.log(err);
             }
