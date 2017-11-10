@@ -1,50 +1,81 @@
 'use strict';
 
-var keys = require('./keys.json');
-var localities = require('./localities.json');
-var request = require('request');
-var mqtt = require('mqtt');
+const config = require('./config.json');
+const mqtt = require('mqtt');
+const onDeath = require('death');
 
-var client = mqtt.connect('mqtt://mqtt.thingspeak.com', {
-    username: keys.user,
-    password: keys.mqtt,
+const ThingSpeakApi = require('./thingspeak.api');
+
+let client = mqtt.connect(config.mqtt.host, {
+    username: config.user,
+    password: config.mqtt.apiKey,
     clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
     connectTimeout: 1000
 });
 client.on('connect', function () {
-    setTimeout(populateChannels, 1200, 0);
+
+    ThingSpeakApi.getLocalitiesFeeds().then((feeds) => {
+        for(let i = 0; i < feeds.length; i++) {
+            let locality = getLocalityFromConfig(feeds[i].field1);
+            if (locality){
+                locality.keyWrite = feeds[i].field2;
+                locality.keyRead = feeds[i].field3;
+                locality.channelId = feeds[i].field4;
+            }
+        }
+
+        let promisesCreateChannels = [];
+        for(let i = 0; i < config.localities.length; i++) {
+            if (!config.localities[i].channelId){
+                promisesCreateChannels.push(ThingSpeakApi.createChannel(config.localities[i]));
+            }
+        }
+
+        Promise.resolve(promisesCreateChannels).then(() => {
+            populateChannels(0);
+        });
+    });
 });
+
+function getLocalityFromConfig(locality) {
+    for(let i = 0; i < config.localities.length; i++){
+        if (config.localities[i].name == locality){
+            return config.localities[i];
+        }
+    }
+}
 
 client.on('error', function (error) {
     console.log(error);
-})
+});
 
-var populateChannels = function (i) {
+function populateChannels (i) {
     if (!client.connected) {
         return;
     }
-    var id = i % 3;
-    var co2 = (Math.random() * localities[id].maxCO2) + localities[id].minCO2;
-    var co = (Math.random() * localities[id].maxCO) + localities[id].minCO;
-    var no2 = (Math.random() * localities[id].maxNO2) + localities[id].minNO2;
-    var o3 = (Math.random() * localities[id].maxO3) + localities[id].minO3;
-    var temperature = (Math.random() * localities[id].maxTemperature) + localities[id].minTemperature;
-    var humidity = (Math.random() * localities[id].maxHumidity) + localities[id].minHumidity;
+    let id = i %  config.localities.length;
+    let co2 = (Math.random() * config.localities[id].maxCO2+ config.localities[id].minCO2).toFixed(2) ;
+    let co = (Math.random() * config.localities[id].maxCO+ config.localities[id].minCO).toFixed(2) ;
+    let no2 = (Math.random() * config.localities[id].maxNO2+ config.localities[id].minNO2).toFixed(2) ;
+    let o3 = (Math.random() * config.localities[id].maxO3+ config.localities[id].minO3).toFixed(3) ;
+    let temperature = (Math.random() * config.localities[id].maxTemperature+ config.localities[id].minTemperature).toFixed(2) ;
+    let humidity = (Math.random() * config.localities[id].maxHumidity+ config.localities[id].minHumidity).toFixed(2) ;
 
-    var pubish_channel = 'channels/' + localities[id].channel_id + '/publish/' + localities[id].write_key;
-    var publish_payload = 'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7=' + localities[id].lat + '&field8=' + localities[id].long + '&status=MQTTPUBLISH';
-    console.log('channel: ' + pubish_channel);
-    console.log('payload: ' + publish_payload);
-    client.publish(pubish_channel, publish_payload, {qos: 0}, function (err) {
+    client.publish('channels/' + config.localities[id].channelId + '/publish/' + config.localities[id].keyWrite,
+        'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7='
+        + config.localities[id].lat + '&field8=' + config.localities[id].long + '&status=MQTTPUBLISH',
+        function (err) {
             if (err != undefined) {
-                console.log(err);
+                console.error(err);
             }
         });
 
-    if (i < 6) {
-        setTimeout(populateChannels, 1200, ++i);
-    }
-    else {
-        client.end();
-    }
-};
+    console.log('Sending data of ' + config.localities[id].name);
+    setTimeout(populateChannels, 2000, ++i);
+}
+
+
+onDeath(function(signal, err) {
+    console.log('Stopping things...');
+    client.end();
+});

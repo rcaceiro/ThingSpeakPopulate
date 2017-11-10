@@ -1,0 +1,82 @@
+{
+    "localities": [
+    {
+        "name": "Leiria",
+        "minCO2": 200,
+        "maxCO2": 300,
+        "minTemperature": -5,
+        "maxTemperature": 38,
+        "minNO2": 0,
+        "maxNO2": 0.6,
+        "minCO": 80,
+        "maxCO": 150,
+        "minO3": 0.020,
+        "maxO3": 0.050,
+        "minHumidity": 40,
+        "maxHumidity": 100,
+        "lat": 39.7495,
+        "long": -8.8077
+    },
+    {
+        "name": "Coimbra",
+        "minCO2": 200,
+        "maxCO2": 400,
+        "minTemperature": -10,
+        "maxTemperature": 35,
+        "minNO2": 0,
+        "maxNO2": 0.6,
+        "minCO": 80,
+        "maxCO": 150,
+        "minO3": 0.020,
+        "maxO3": 0.050,
+        "minHumidity": 40,
+        "maxHumidity": 80,
+        "lat": 40.2033,
+        "long": -8.4103
+    },
+    {
+        "name": "Porto",
+        "minCO2": 300,
+        "maxCO2": 400,
+        "minTemperature": -10,
+        "maxTemperature": 35,
+        "minNO2": 0,
+        "maxNO2": 0.6,
+        "minCO": 80,
+        "maxCO": 160,
+        "minO3": 0.020,
+        "maxO3": 0.064,
+        "minHumidity": 50,
+        "maxHumidity": 80,
+        "lat": 41.1579,
+        "long": -8.6291
+    },
+      {
+        "name": "Braga",
+        "minCO2": 100,
+        "maxCO2": 150,
+        "minTemperature": -10,
+        "maxTemperature": 35,
+        "minNO2": 0,
+        "maxNO2": 0.6,
+        "minCO": 80,
+        "maxCO": 150,
+        "minO3": 0.020,
+        "maxO3": 0.050,
+        "minHumidity": 50,
+        "maxHumidity": 90,
+        "lat": 41.1579,
+        "long": -8.6291
+      }],
+  "localitiesKey": {
+    "read": "CMKTY1E2088032UO",
+    "write": "FP7NNU6J2G4O4PO7"
+  } ,
+  "user": "g10ipleiria",
+  "apiKey": "P6GFIJUQZM2EB42X",
+  "mqtt":  {
+    "host": "mqtt://mqtt.thingspeak.com",
+    "apiKey": "CO40YVK6MW81H7YL"
+  }
+
+}
