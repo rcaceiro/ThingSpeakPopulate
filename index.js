@@ -61,17 +61,23 @@ function populateChannels (i) {
     let temperature = (Math.random() * config.localities[id].maxTemperature+ config.localities[id].minTemperature).toFixed(2) ;
     let humidity = (Math.random() * config.localities[id].maxHumidity+ config.localities[id].minHumidity).toFixed(2) ;
 
-    client.publish('channels/' + config.localities[id].channelId + '/publish/' + config.localities[id].keyWrite,
-        'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7='
-        + 'mqttPublisher' + '&status=MQTTPUBLISH',
-        function (err) {
-            if (err != undefined) {
-                console.error(err);
-            }
-        });
+    if (config.localities[id].keyWrite){
+        client.publish('channels/' + config.localities[id].channelId + '/publish/' + config.localities[id].keyWrite,
+            'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7='
+            + 'mqttPublisher' + '&status=MQTTPUBLISH',
+            function (err) {
+                if (err != undefined) {
+                    console.error(err);
+                }
+            });
+        console.log('Sending data of ' + config.localities[id].name);
+    }else {
+        console.error('No write key in ' + config.localities[id].name +' passing to the next channel...');
+    }
 
-    console.log('Sending data of ' + config.localities[id].name);
-    setTimeout(populateChannels, 2000, ++i);
+
+
+    setTimeout(populateChannels, 20000, ++i);
 }
 
 

@@ -17,9 +17,9 @@ module.exports = class ThingSpeakApi {
                     locality.keyWrite = json.api_keys[0].api_key;
                     locality.keyRead = json.api_keys[1].api_key;
                     console.log('Channel for ' + locality.name + ' created');
-                    this.addLocatity(locality).then(() => {
-                        resolve();
-                    });
+
+                    this.addLocatityWithRetry(resolve, locality);
+
 
                 } else {
                     console.log('[createChannel] ThingSpeak returned an error:', error);
@@ -28,6 +28,17 @@ module.exports = class ThingSpeakApi {
 
 
             });
+        });
+    }
+
+    static addLocatityWithRetry(resolve, locality){
+        this.addLocatity(locality).then(() => {
+            resolve();
+        }).catch(() => {
+            setTimeout(() => {
+                this.addLocatityWithRetry(resolve, locality);
+            }, Math.random() * 20000 + 5000);
+
         });
     }
 
@@ -40,10 +51,13 @@ module.exports = class ThingSpeakApi {
                 (error, response, body) => {
 
                     if (response.statusCode === 200) {
-                        if (body) {
-                            console.log('Added new locatity info to channel');
+                        if (body != "0") {
+                            console.log('Added new locatity ' + locality.name +' info to channel');
+                            console.log('Response:' + body);
                             resolve();
                             return;
+                        }else {
+                            console.error('Failed to add locality ' + locality.name +' info to channel, trying later...');
                         }
                     }
                     console.log('[addLocatity] ThingSpeak returned an error:', error);
