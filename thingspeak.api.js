@@ -4,14 +4,14 @@ const config = require('./config.json');
 const request = require('request');
 
 module.exports = class ThingSpeakApi {
-    static createChannel(locality){
+    static createChannel(locality) {
         return new Promise((resolve, reject) => {
             let url = 'https://api.thingspeak.com/channels.json?api_key=' + config.apiKey
-                +'&field1=no2&field2=co&field3=o3&field4=temperature&field5=humidity' +
+                + '&field1=no2&field2=co&field3=o3&field4=temperature&field5=humidity' +
                 '&field6=co2&field7=latitude&field8=longitude&name=' + locality.name;
-            request.post(url, {form:{}}, (error, response, body) => {
+            request.post(url, {form: {}}, (error, response, body) => {
 
-                if (!error){
+                if (!error) {
                     let json = JSON.parse(body);
                     locality.channelId = json.id;
                     locality.keyWrite = json.api_keys[0].api_key;
@@ -21,7 +21,7 @@ module.exports = class ThingSpeakApi {
                         resolve();
                     });
 
-                }else {
+                } else {
                     console.log('[createChannel] ThingSpeak returned an error:', error);
                     reject();
                 }
@@ -31,16 +31,16 @@ module.exports = class ThingSpeakApi {
         });
     }
 
-    static addLocatity(locality){
+    static addLocatity(locality) {
         return new Promise((resolve, reject) => {
             let url = 'https://api.thingspeak.com/update?api_key=' + config.localitiesKey.write
-                + '&field1=' + locality.name +'&field2=' + locality.keyWrite
-                + '&field3=' + locality.keyRead +'&field4=' + locality.channelId;
+                + '&field1=' + locality.name + '&field2=' + locality.keyWrite
+                + '&field3=' + locality.keyRead + '&field4=' + locality.channelId;
             request(url,
                 (error, response, body) => {
 
-                    if (response.statusCode === 200){
-                        if (body){
+                    if (response.statusCode === 200) {
+                        if (body) {
                             console.log('Added new locatity info to channel');
                             resolve();
                             return;
@@ -54,20 +54,20 @@ module.exports = class ThingSpeakApi {
         });
     }
 
-    static getLocalitiesFeeds(){
-       return new Promise((resolve, reject) => {
-           request('https://api.thingspeak.com/channels/357813/feeds.json?api_key=' + config.localitiesKey.read,
-               (error, response, body) => {
+    static getLocalitiesFeeds() {
+        return new Promise((resolve, reject) => {
+            request('https://api.thingspeak.com/channels/357813/feeds.json?api_key=' + config.localitiesKey.read,
+                (error, response, body) => {
 
-                   if (response.statusCode === 200){
-                       let json = JSON.parse(body);
-                       resolve(json.feeds);
+                    if (response.statusCode === 200) {
+                        let json = JSON.parse(body);
+                        resolve(json.feeds);
 
-                   }else {
-                       console.log('[getLocalitiesFeeds] ThingSpeak returned an error:', error);
-                       reject();
-                   }
-               })
-       });
+                    } else {
+                        console.log('[getLocalitiesFeeds] ThingSpeak returned an error:', error);
+                        reject();
+                    }
+                })
+        });
     }
 };

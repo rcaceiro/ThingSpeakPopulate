@@ -63,7 +63,7 @@ function populateChannels (i) {
 
     client.publish('channels/' + config.localities[id].channelId + '/publish/' + config.localities[id].keyWrite,
         'field1=' + no2 + '&field2=' + co + '&field3=' + o3 + '&field4=' + temperature + '&field5=' + humidity + '&field6=' + co2 + '&field7='
-        + config.localities[id].lat + '&field8=' + config.localities[id].long + '&status=MQTTPUBLISH',
+        + 'mqttPublisher' + '&status=MQTTPUBLISH',
         function (err) {
             if (err != undefined) {
                 console.error(err);
