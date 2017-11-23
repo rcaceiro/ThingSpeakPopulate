@@ -1,7 +1,7 @@
 {
     "localities": [
     {
-        "name": "Leiria",
+        "name": "Leiria, Leiria, Portugal",
         "minCO2": 200,
         "maxCO2": 300,
         "minTemperature": -5,
@@ -18,7 +18,7 @@
         "long": -8.8077
     },
     {
-        "name": "Coimbra",
+        "name": "Coimbra, Coimbra, Portugal",
         "minCO2": 200,
         "maxCO2": 400,
         "minTemperature": -10,
@@ -35,7 +35,7 @@
         "long": -8.4103
     },
     {
-        "name": "Porto",
+        "name": "Porto, Porto, Portugal",
         "minCO2": 300,
         "maxCO2": 400,
         "minTemperature": -10,
@@ -52,7 +52,7 @@
         "long": -8.6291
     },
       {
-        "name": "Braga",
+        "name": "Braga, Braga, Portugal",
         "minCO2": 100,
         "maxCO2": 150,
         "minTemperature": -10,
